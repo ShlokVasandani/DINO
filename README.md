@@ -48,7 +48,7 @@ cd backend && pytest        # 17 tests: extraction, matching, scoring, API
 
 ## Limits
 
-- **Image OCR** needs the Tesseract binary installed (`brew install tesseract`). Scanned PDFs must be uploaded as images; only PDFs with a text layer are read directly.
+- **Image OCR** needs the Tesseract binary installed (`brew install tesseract`). Scanned PDFs must be uploaded as images; only PDFs with a text layer are read directly. Tested on a clean typed-report image (all 7 key fields recovered, matched WO-4417). On synthetically degraded images (rotated, blurred, JPEG-compressed, noisy) accuracy drops sharply, and simple preprocessing (upscale, denoise, thresholding) did not help reliably. Expect good results from clear, straight-on photos of typed reports, and poor results from rough photos or handwriting.
 - **Handwriting:** OCR quality on real handwriting will vary. Extraction is tuned for typed or neatly written reports.
 - **Data is synthetic.** The 12 work orders in `backend/dino/data/work_orders.json` and the sample reports are made up; there is no ERP integration.
 - Extraction is rule-based, not an LLM. It is predictable and testable, but it will miss phrasings the patterns do not cover. Extending `extract.py` (or adding an LLM fallback behind the same interface) is the obvious next step.
