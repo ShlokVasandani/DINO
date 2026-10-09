@@ -9,7 +9,7 @@ export default defineConfig({
     tailwindcss(),
   ],
 
-  base: "/DinoBuild/",
+  base: "/DINO/",
 
   resolve: {
     alias: {

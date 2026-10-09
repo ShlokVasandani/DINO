@@ -1,0 +1,4 @@
+# Ambiguous: part and date only
+Report date 2026-09-10
+Part BK-0419-S, output 760, rejected 9
+no stoppages today

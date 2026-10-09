@@ -1,0 +1,7 @@
+# Clean report with a work order number
+SHIFT PRODUCTION REPORT  SPR-2026-1048
+Date: 10/09/2026   Shift: B (14:00 - 22:00)
+WO-4417  Part AX-2210-R  Assembly Line 3
+Operator Emp-2291
+Produced 1,046 units, rejected 38.
+Line stopped 42 min for tooling changeover. Resumed after first-piece approval.

@@ -1,0 +1,4 @@
+# Conflict: work order and part disagree
+W/O 4430 ... valve cover CV-7731-B ... Line 2 ... Shift A ... 10/09/26
+Produced 380 pcs, 22 rejected
+Downtime 1.5 hr - waiting material

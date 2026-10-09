@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import {
   FileUp,
@@ -10,6 +10,7 @@ import {
   Lightbulb,
   Search,
   ArrowRight,
+  FileText,
 } from "lucide-react"
 
 import {
@@ -22,69 +23,90 @@ import {
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
-function stageLabel(progress) {
-  if (progress < 40) return "OCR / text extraction"
-  if (progress < 70) return "Entity extraction"
-  if (progress < 100) return "Matching to work orders"
-  return "Scoring against plan"
-}
+const API = import.meta.env.VITE_API_URL ?? "http://localhost:8000"
+const BASE = import.meta.env.BASE_URL
+
+const fmt = (n) => (n == null ? "—" : n.toLocaleString("en-IN"))
+const SHIFT_HOURS = { A: "06:00 – 14:00", B: "14:00 – 22:00", C: "22:00 – 06:00" }
 
 function App() {
   const [file, setFile] = useState(null)
+  const [label, setLabel] = useState("")
   const [status, setStatus] = useState("idle")
-  const [progress, setProgress] = useState(0)
+  const [result, setResult] = useState(null)
+  const [error, setError] = useState(null)
+  const [samples, setSamples] = useState([])
 
   const inputRef = useRef(null)
 
+  useEffect(() => {
+    fetch(`${API}/api/samples`)
+      .then((r) => (r.ok ? r.json() : []))
+      .then(setSamples)
+      .catch(() => setSamples([]))
+  }, [])
+
   const handleFileChange = (e) => {
     const selectedFile = e.target.files?.[0]
-
     if (selectedFile) {
       setFile(selectedFile)
+      setLabel(selectedFile.name)
     }
   }
 
   const handleDrop = (e) => {
     e.preventDefault()
-
     const droppedFile = e.dataTransfer.files?.[0]
-
     if (droppedFile) {
       setFile(droppedFile)
+      setLabel(droppedFile.name)
+    }
+  }
+
+  const run = async (body, name) => {
+    setStatus("processing")
+    setError(null)
+    setLabel(name)
+    try {
+      const res = await fetch(`${API}/api/process`, { method: "POST", body })
+      if (!res.ok) {
+        const detail = await res.json().catch(() => ({}))
+        throw new Error(detail.detail || `Request failed (${res.status})`)
+      }
+      setResult(await res.json())
+      setStatus("complete")
+    } catch (err) {
+      setError(
+        err instanceof TypeError
+          ? `Can't reach the Dino backend at ${API}. Start it with: cd backend && uvicorn dino.api:app`
+          : err.message
+      )
+      setStatus("idle")
     }
   }
 
   const handleProcess = () => {
     if (!file) return
+    const body = new FormData()
+    body.append("file", file)
+    run(body, file.name)
+  }
 
-    setStatus("processing")
-    setProgress(0)
-
-    let currentProgress = 0
-
-    const interval = setInterval(() => {
-      currentProgress += 20
-      setProgress(currentProgress)
-
-      if (currentProgress >= 100) {
-        clearInterval(interval)
-
-        setTimeout(() => {
-          setStatus("complete")
-        }, 500)
-      }
-    }, 250)
+  const handleSample = (sample) => {
+    const body = new FormData()
+    body.append("text", sample.text)
+    run(body, sample.title)
   }
 
   const handleReset = () => {
     setFile(null)
+    setLabel("")
+    setResult(null)
+    setError(null)
     setStatus("idle")
-    setProgress(0)
-
     if (inputRef.current) {
       inputRef.current.value = ""
     }
@@ -101,12 +123,12 @@ function App() {
         <header className="mb-12 text-center">
           <div className="mb-3 flex items-center justify-center gap-3">
             <img
-              src="/logo.png"
+              src={`${BASE}logo.png`}
               alt="Dino logo"
               className="h-14 w-14 dark:hidden"
             />
             <img
-              src="/logo-dark.png"
+              src={`${BASE}logo-dark.png`}
               alt=""
               aria-hidden="true"
               className="hidden h-14 w-14 dark:block"
@@ -259,6 +281,35 @@ function App() {
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
 
+                      {error && (
+                        <Alert variant="destructive" className="mt-4 max-w-md">
+                          <AlertTriangle className="h-4 w-4" />
+                          <AlertTitle>Couldn't process the report</AlertTitle>
+                          <AlertDescription>{error}</AlertDescription>
+                        </Alert>
+                      )}
+
+                      {samples.length > 0 && (
+                        <div className="mt-6 w-full max-w-md">
+                          <p className="mb-2 text-center text-xs text-muted-foreground">
+                            or try a sample report
+                          </p>
+                          <div className="flex flex-wrap justify-center gap-2">
+                            {samples.map((sample) => (
+                              <Button
+                                key={sample.id}
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleSample(sample)}
+                              >
+                                <FileText className="mr-1 h-3 w-3" />
+                                {sample.title.split(":")[0]}
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
                     </CardContent>
 
                   </motion.div>
@@ -302,24 +353,6 @@ function App() {
                         numbers, then matching them against open work orders.
                       </p>
 
-
-                      <div className="mt-8 w-full max-w-sm">
-
-                        <Progress value={progress} />
-
-                        <div className="mt-2 flex justify-between text-xs text-muted-foreground">
-
-                          <span>
-                            {stageLabel(progress)}
-                          </span>
-
-                          <span>
-                            {progress}%
-                          </span>
-
-                        </div>
-
-                      </div>
 
                     </CardContent>
 
@@ -368,7 +401,7 @@ function App() {
                             </CardTitle>
 
                             <CardDescription>
-                              {file?.name}
+                              {label}
                             </CardDescription>
 
                           </div>
@@ -376,13 +409,7 @@ function App() {
                         </div>
 
 
-                        <Badge variant="secondary">
-
-                          <CircleCheck className="mr-1 h-3 w-3" />
-
-                          Matched · 94%
-
-                        </Badge>
+                        <MatchBadge match={result.match} />
 
                       </div>
 
@@ -397,44 +424,46 @@ function App() {
                       <CardContent className="space-y-6 pt-6">
 
                         <ReportSection
-                          title="Report Details"
+                          title="Extracted from report"
                           items={[
-                            ["Report Type", "Shift Production Report"],
-                            ["Date", "10 September 2026"],
-                            ["Shift", "B (14:00 – 22:00)"],
-                            ["Reference ID", "SPR-2026-1048"],
+                            ["Date", result.extracted.date ?? "Not found"],
+                            ["Shift", result.extracted.shift ? `${result.extracted.shift} (${SHIFT_HOURS[result.extracted.shift]})` : "Not found"],
+                            ["Work order cited", result.extracted.work_order ?? "None"],
+                            ["Part number", result.extracted.part_number ?? "Not found"],
+                            ["Line", result.extracted.line ? `Line ${result.extracted.line}` : "Not found"],
                           ]}
                         />
 
-                        <ReportSection
-                          title="Matched Work Order"
-                          items={[
-                            ["Work Order", "WO-4417"],
-                            ["Part Number", "AX-2210-R"],
-                            ["Line", "Assembly Line 3"],
-                            ["Operator", "Emp-2291"],
-                          ]}
-                        />
+                        {result.match.work_order ? (
+                          <ReportSection
+                            title="Matched work order"
+                            items={[
+                              ["Work order", result.match.work_order.id],
+                              ["Part", `${result.match.work_order.part_number} · ${result.match.work_order.part_name}`],
+                              ["Line", `Line ${result.match.work_order.line}`],
+                              ["Planned", `${result.match.work_order.date}, shift ${result.match.work_order.shift}`],
+                            ]}
+                          />
+                        ) : (
+                          <ReportSection
+                            title="Matched work order"
+                            content="No work order fits this report well enough. Check the part number, line and date."
+                          />
+                        )}
 
-                        <ReportSection
-                          title="Output vs Plan"
-                          items={[
-                            ["Planned Qty", "1,200 units"],
-                            ["Reported Qty", "1,046 units"],
-                            ["Rejected", "38 units"],
-                            ["Downtime", "42 min"],
-                          ]}
-                        />
+                        {result.assessment && (
+                          <ReportSection
+                            title="Output vs plan"
+                            items={[
+                              ["Planned", `${fmt(result.assessment.planned)} units`],
+                              ["Reported", result.assessment.produced == null ? "Not found" : `${fmt(result.assessment.produced)} units`],
+                              ["Rejected", result.assessment.rejected == null ? "Not found" : `${fmt(result.assessment.rejected)} units`],
+                              ["Downtime", result.assessment.downtime_min == null ? "None reported" : `${result.assessment.downtime_min} min`],
+                            ]}
+                          />
+                        )}
 
-                        <ReportSection
-                          title="Operator Notes"
-                          content="Free-text notes from the report have been parsed into structured fields. Quantities, part numbers and downtime references were normalized before matching."
-                        />
-
-                        <ReportSection
-                          title="Deviations"
-                          content="Reported output falls short of the planned quantity for this shift, and recorded downtime exceeds the allowance set in the production plan."
-                        />
+                        <ReportSection title="Source text" content={result.text} />
 
                       </CardContent>
 
@@ -528,50 +557,61 @@ function App() {
                     <CardContent className="space-y-4 pt-6">
 
 
-                      {/* WARNING */}
+                      {result.assessment ? (
+                        <>
+                          <SuggestionCard
+                            icon={<Sparkles className="h-4 w-4" />}
+                            title={`Risk: ${result.assessment.risk_level} (${result.assessment.risk_score}/100)`}
+                            description={
+                              result.assessment.deviations.length
+                                ? `${result.assessment.deviations.length} deviation(s) from the production plan.`
+                                : "No deviations from the production plan."
+                            }
+                          />
 
-                      <Alert>
+                          {result.assessment.deviations.map((d) => (
+                            <Alert key={d.type} variant={d.severity === "high" ? "destructive" : undefined}>
+                              <AlertTriangle className="h-4 w-4" />
+                              <AlertTitle className="capitalize">{d.type.replace("_", " ")} · {d.severity}</AlertTitle>
+                              <AlertDescription>{d.message}</AlertDescription>
+                            </Alert>
+                          ))}
 
-                        <AlertTriangle className="h-4 w-4" />
+                          {result.assessment.recommendations.map((r) => (
+                            <SuggestionCard
+                              key={r}
+                              icon={<Lightbulb className="h-4 w-4" />}
+                              title="Recommended action"
+                              description={r}
+                            />
+                          ))}
+                        </>
+                      ) : (
+                        <SuggestionCard
+                          icon={<Search className="h-4 w-4" />}
+                          title="No assessment"
+                          description="A report can only be scored against the plan once it is matched to a work order."
+                        />
+                      )}
 
-                        <AlertTitle>
-                          Output shortfall
-                        </AlertTitle>
+                      {result.match.notes.map((n) => (
+                        <SuggestionCard
+                          key={n}
+                          icon={<Search className="h-4 w-4" />}
+                          title="Needs review"
+                          description={n}
+                        />
+                      ))}
 
-                        <AlertDescription>
-                          Reported quantity is 154 units below plan for
-                          WO-4417. Confirm against the line counter before
-                          closing the shift.
-                        </AlertDescription>
-
-                      </Alert>
-
-
-                      {/* RECOMMENDATION */}
-
-                      <SuggestionCard
-                        icon={<Lightbulb className="h-4 w-4" />}
-                        title="Recommended action"
-                        description="Reschedule the remaining 154 units into the next shift on Line 3, or flag WO-4417 for partial completion."
-                      />
-
-
-                      {/* KEY FINDING */}
-
-                      <SuggestionCard
-                        icon={<Search className="h-4 w-4" />}
-                        title="Downtime driver"
-                        description="Operator notes reference a tooling changeover as the cause of the 42 minute stoppage — the largest deviation in this report."
-                      />
-
-
-                      {/* POSITIVE */}
-
-                      <SuggestionCard
-                        icon={<CircleCheck className="h-4 w-4" />}
-                        title="High match confidence"
-                        description="Part number and line reference both resolve cleanly to WO-4417, giving a 94% match against the active production plan."
-                      />
+                      {result.match.candidates.length > 1 && (
+                        <ReportSection
+                          title="Other candidates"
+                          items={result.match.candidates.slice(1).map((c) => [
+                            c.work_order.id,
+                            `${Math.round(c.confidence * 100)}%`,
+                          ])}
+                        />
+                      )}
 
                     </CardContent>
 
@@ -597,6 +637,25 @@ function App() {
       </div>
 
     </main>
+  )
+}
+
+
+function MatchBadge({ match }) {
+  const pct = Math.round(match.confidence * 100)
+  if (match.status === "matched") {
+    return (
+      <Badge variant="secondary">
+        <CircleCheck className="mr-1 h-3 w-3" />
+        Matched · {pct}%
+      </Badge>
+    )
+  }
+  return (
+    <Badge variant="outline">
+      <AlertTriangle className="mr-1 h-3 w-3" />
+      {match.status === "review" ? "Needs review" : "No match"} · {pct}%
+    </Badge>
   )
 }
 
