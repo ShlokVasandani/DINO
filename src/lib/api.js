@@ -1,6 +1,7 @@
 import demo from "@/demo-data.json"
 
-export const API = import.meta.env.VITE_API_URL ?? "http://localhost:8000"
+// Dev talks to a local uvicorn; a production build calls the same origin (Vercel serves /api).
+export const API = import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? "http://localhost:8000" : "")
 
 /** Resolve whether a live backend answers; otherwise fall back to the bundled snapshot. */
 export async function detectMode() {
