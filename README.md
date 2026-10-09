@@ -12,11 +12,11 @@ Built for **Smart India Hackathon 2026**, PS 26122 (Production Report to Product
 
 ## The interface
 
-- **X-ray:** the report text with every extracted field highlighted in place, so you can see exactly what evidence Dino used (and which fields it could not find).
-- **Why this work order:** per-field evidence bars for the top candidates, so a match is explainable rather than a black box.
-- **Against the plan:** output, reject rate and downtime gauges with their allowances, a risk dial, deviations and recommended actions.
-- **Plan board:** lines × shifts grid where the matched work order glows and runners-up show their scores.
-- **Inbox:** analyse several reports and watch matched / needs-review counts and average risk update.
+A three-column workspace that follows your OS light or dark setting.
+
+- **Reports** (left): an inbox with each report's status, confidence and risk. Paste text or upload a file to add one.
+- **Report** (centre): the source text with the evidence Dino used marked in place. Identifiers are underlined, quantities highlighted, the downtime cause in italics. The plan below is a lines × shifts board where the matched work order is filled and runners-up are outlined with their scores.
+- **Analysis** (right): the match and its confidence, a table of every extracted field (hover a row to locate it in the text), per-field evidence for the top candidates, and output, reject and downtime measured against the plan's allowances, with deviations and recommended actions.
 
 With no backend reachable the UI falls back to a bundled snapshot of the sample results (`src/demo-data.json`, regenerated with `python backend/scripts/export_demo.py` and checked by a test), so the hosted build still works.
 
@@ -43,7 +43,7 @@ npm run dev
 Open the app and try the sample reports, paste text, or upload a `.txt`, text-layer `.pdf`, or image. The frontend talks to `http://localhost:8000`; set `VITE_API_URL` to point elsewhere.
 
 ```bash
-cd backend && pytest        # 17 tests: extraction, matching, scoring, API
+cd backend && pytest        # 18 tests: extraction, matching, scoring, API
 ```
 
 ## Limits

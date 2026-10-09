@@ -12,7 +12,7 @@ MONTHS = {m: i + 1 for i, m in enumerate(
     ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"])}
 
 CAUSES = [
-    ("changeover", r"change\s*-?over|tool(?:ing)?\s*change|die\s*change|setup|set-up"),
+    ("changeover", r"tool(?:ing)?\s*change(?:\s*-?over)?|die\s*change(?:\s*-?over)?|change\s*-?over|set-?up"),
     ("breakdown", r"break\s*-?down|machine\s*(?:fault|failure|stopped)|motor|jam(?:med)?"),
     ("material shortage", r"material\s*(?:shortage|not\s*available|delay)|no\s*material|waiting\s*(?:for\s*)?material"),
     ("power cut", r"power\s*(?:cut|failure|outage)|electricity"),

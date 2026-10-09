@@ -124,3 +124,9 @@ def test_tied_candidates_lower_the_confidence():
     r = process(sample("3_ambiguous.txt"))
     assert r["match"]["confidence"] <= 0.5
     assert r["match"]["candidates"][0]["confidence"] == r["match"]["candidates"][1]["confidence"]
+
+
+def test_cause_span_covers_the_whole_phrase():
+    r = process(sample("1_clean_shortfall.txt"))
+    a, b = r["spans"]["downtime_cause"]
+    assert r["text"][a:b] == "tooling changeover"
