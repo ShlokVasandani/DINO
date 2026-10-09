@@ -99,3 +99,28 @@ def test_api_rejects_empty_and_bad_files():
 def test_api_samples_and_work_orders():
     assert len(client.get("/api/samples").json()) == 5
     assert len(client.get("/api/work-orders").json()) == 12
+
+
+def test_spans_point_at_the_evidence():
+    r = process(sample("1_clean_shortfall.txt"))
+    text = r["text"]
+    for field, needle in {"work_order": "WO-4417", "part_number": "AX-2210-R", "date": "10/09/2026"}.items():
+        a, b = r["spans"][field]
+        assert needle in text[a:b], field
+    assert "spans" in process("nothing") and process("nothing")["spans"] == {}
+
+
+def test_demo_snapshot_is_up_to_date():
+    """If this fails, run `python scripts/export_demo.py` from backend/."""
+    import json
+    import sys
+    sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
+    from export_demo import build
+    snapshot = Path(__file__).parent.parent.parent / "src" / "demo-data.json"
+    assert json.loads(snapshot.read_text()) == build()
+
+
+def test_tied_candidates_lower_the_confidence():
+    r = process(sample("3_ambiguous.txt"))
+    assert r["match"]["confidence"] <= 0.5
+    assert r["match"]["candidates"][0]["confidence"] == r["match"]["candidates"][1]["confidence"]

@@ -54,6 +54,7 @@ def assess(fields: dict, wo: dict) -> dict:
         "planned": planned, "produced": produced, "rejected": rejected,
         "good": produced - rejected if produced is not None and rejected is not None else None,
         "shortfall": shortfall, "shortfall_pct": shortfall_pct, "reject_pct": reject_pct,
+        "reject_allowance_pct": wo["max_reject_pct"],
         "downtime_min": downtime, "downtime_allowance_min": wo["max_downtime_min"],
         "deviations": deviations, "recommendations": actions,
         "risk_score": risk, "risk_level": level,

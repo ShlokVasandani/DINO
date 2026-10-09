@@ -1,0 +1,917 @@
+{
+ "samples": [
+  {
+   "id": "1_clean_shortfall",
+   "title": "Clean report with a work order number",
+   "text": "SHIFT PRODUCTION REPORT  SPR-2026-1048\nDate: 10/09/2026   Shift: B (14:00 - 22:00)\nWO-4417  Part AX-2210-R  Assembly Line 3\nOperator Emp-2291\nProduced 1,046 units, rejected 38.\nLine stopped 42 min for tooling changeover. Resumed after first-piece approval."
+  },
+  {
+   "id": "2_noisy_no_wo",
+   "title": "Handwritten note, OCR errors, no work order number",
+   "text": "shift B  line 3   10-09-2026\npart no AX-22lO-R  (rear brkt)\nmade 1180 nos, scrap 21\nmachine breakdown approx 20 mins - motor jam, fixed by maint."
+  },
+  {
+   "id": "3_ambiguous",
+   "title": "Ambiguous: part and date only",
+   "text": "Report date 2026-09-10\nPart BK-0419-S, output 760, rejected 9\nno stoppages today"
+  },
+  {
+   "id": "4_on_plan",
+   "title": "On plan, low risk",
+   "text": "Production log 10 Sep 2026\nLine 4, Shift A, HX-1050-M\nTotal completed 1498, rejected 12\nDowntime 10 min (lubrication)"
+  },
+  {
+   "id": "5_conflicting",
+   "title": "Conflict: work order and part disagree",
+   "text": "W/O 4430 ... valve cover CV-7731-B ... Line 2 ... Shift A ... 10/09/26\nProduced 380 pcs, 22 rejected\nDowntime 1.5 hr - waiting material"
+  }
+ ],
+ "results": {
+  "1_clean_shortfall": {
+   "source": "text",
+   "text": "SHIFT PRODUCTION REPORT  SPR-2026-1048\nDate: 10/09/2026   Shift: B (14:00 - 22:00)\nWO-4417  Part AX-2210-R  Assembly Line 3\nOperator Emp-2291\nProduced 1,046 units, rejected 38.\nLine stopped 42 min for tooling changeover. Resumed after first-piece approval.",
+   "extracted": {
+    "work_order": "WO-4417",
+    "part_number": "AX-2210-R",
+    "line": 3,
+    "date": "2026-09-10",
+    "shift": "B",
+    "produced": 1046,
+    "rejected": 38,
+    "downtime_min": 42,
+    "downtime_cause": "changeover"
+   },
+   "spans": {
+    "work_order": [
+     83,
+     90
+    ],
+    "part_number": [
+     97,
+     106
+    ],
+    "line": [
+     117,
+     123
+    ],
+    "date": [
+     45,
+     55
+    ],
+    "shift": [
+     58,
+     66
+    ],
+    "produced": [
+     142,
+     156
+    ],
+    "rejected": [
+     164,
+     175
+    ],
+    "downtime_min": [
+     182,
+     196
+    ],
+    "downtime_cause": [
+     201,
+     215
+    ]
+   },
+   "match": {
+    "status": "matched",
+    "confidence": 1.0,
+    "work_order": {
+     "id": "WO-4417",
+     "part_number": "AX-2210-R",
+     "part_name": "Rear bracket assembly",
+     "line": 3,
+     "date": "2026-09-10",
+     "shift": "B",
+     "planned_qty": 1200,
+     "max_downtime_min": 30,
+     "max_reject_pct": 3
+    },
+    "candidates": [
+     {
+      "work_order": {
+       "id": "WO-4417",
+       "part_number": "AX-2210-R",
+       "part_name": "Rear bracket assembly",
+       "line": 3,
+       "date": "2026-09-10",
+       "shift": "B",
+       "planned_qty": 1200,
+       "max_downtime_min": 30,
+       "max_reject_pct": 3
+      },
+      "confidence": 1.0,
+      "field_scores": {
+       "work_order": 1.0,
+       "part_number": 1.0,
+       "line": 1.0,
+       "date": 1.0,
+       "shift": 1.0
+      }
+     },
+     {
+      "work_order": {
+       "id": "WO-4409",
+       "part_number": "AX-2210-R",
+       "part_name": "Rear bracket assembly",
+       "line": 3,
+       "date": "2026-09-09",
+       "shift": "B",
+       "planned_qty": 1200,
+       "max_downtime_min": 30,
+       "max_reject_pct": 3
+      },
+      "confidence": 0.504,
+      "field_scores": {
+       "work_order": 0.0,
+       "part_number": 1.0,
+       "line": 1.0,
+       "date": 0.3,
+       "shift": 1.0
+      }
+     },
+     {
+      "work_order": {
+       "id": "WO-4452",
+       "part_number": "AX-2210-R",
+       "part_name": "Rear bracket assembly",
+       "line": 3,
+       "date": "2026-09-11",
+       "shift": "A",
+       "planned_qty": 1200,
+       "max_downtime_min": 30,
+       "max_reject_pct": 3
+      },
+      "confidence": 0.417,
+      "field_scores": {
+       "work_order": 0.0,
+       "part_number": 1.0,
+       "line": 1.0,
+       "date": 0.3,
+       "shift": 0.0
+      }
+     }
+    ],
+    "notes": []
+   },
+   "assessment": {
+    "planned": 1200,
+    "produced": 1046,
+    "rejected": 38,
+    "good": 1008,
+    "shortfall": 154,
+    "shortfall_pct": 12.8,
+    "reject_pct": 3.6,
+    "reject_allowance_pct": 3,
+    "downtime_min": 42,
+    "downtime_allowance_min": 30,
+    "deviations": [
+     {
+      "type": "shortfall",
+      "severity": "medium",
+      "message": "Output is 154 units (12.8%) below the plan of 1200 for WO-4417."
+     },
+     {
+      "type": "rejects",
+      "severity": "medium",
+      "message": "Reject rate 3.6% exceeds the 3% allowance (38 units)."
+     },
+     {
+      "type": "downtime",
+      "severity": "medium",
+      "message": "Downtime of 42 min exceeds the 30 min allowance. Notes attribute it to changeover."
+     }
+    ],
+    "recommendations": [
+     "Reschedule the remaining 154 units into the next shift on Line 3, or flag WO-4417 for partial completion.",
+     "Hold the rejected lot for inspection and check the process settings before the next run.",
+     "Review changeover practice on this line; consider pre-staging tooling to cut setup time."
+    ],
+    "risk_score": 50,
+    "risk_level": "high"
+   }
+  },
+  "2_noisy_no_wo": {
+   "source": "text",
+   "text": "shift B  line 3   10-09-2026\npart no AX-22lO-R  (rear brkt)\nmade 1180 nos, scrap 21\nmachine breakdown approx 20 mins - motor jam, fixed by maint.",
+   "extracted": {
+    "work_order": null,
+    "part_number": "AX-2210-R",
+    "line": 3,
+    "date": "2026-09-10",
+    "shift": "B",
+    "produced": 1180,
+    "rejected": 21,
+    "downtime_min": 20,
+    "downtime_cause": "breakdown"
+   },
+   "spans": {
+    "part_number": [
+     37,
+     46
+    ],
+    "line": [
+     9,
+     15
+    ],
+    "date": [
+     18,
+     28
+    ],
+    "shift": [
+     0,
+     7
+    ],
+    "produced": [
+     60,
+     69
+    ],
+    "rejected": [
+     75,
+     83
+    ],
+    "downtime_min": [
+     92,
+     116
+    ],
+    "downtime_cause": [
+     92,
+     101
+    ]
+   },
+   "match": {
+    "status": "matched",
+    "confidence": 1.0,
+    "work_order": {
+     "id": "WO-4417",
+     "part_number": "AX-2210-R",
+     "part_name": "Rear bracket assembly",
+     "line": 3,
+     "date": "2026-09-10",
+     "shift": "B",
+     "planned_qty": 1200,
+     "max_downtime_min": 30,
+     "max_reject_pct": 3
+    },
+    "candidates": [
+     {
+      "work_order": {
+       "id": "WO-4417",
+       "part_number": "AX-2210-R",
+       "part_name": "Rear bracket assembly",
+       "line": 3,
+       "date": "2026-09-10",
+       "shift": "B",
+       "planned_qty": 1200,
+       "max_downtime_min": 30,
+       "max_reject_pct": 3
+      },
+      "confidence": 1.0,
+      "field_scores": {
+       "part_number": 1.0,
+       "line": 1.0,
+       "date": 1.0,
+       "shift": 1.0
+      }
+     },
+     {
+      "work_order": {
+       "id": "WO-4409",
+       "part_number": "AX-2210-R",
+       "part_name": "Rear bracket assembly",
+       "line": 3,
+       "date": "2026-09-09",
+       "shift": "B",
+       "planned_qty": 1200,
+       "max_downtime_min": 30,
+       "max_reject_pct": 3
+      },
+      "confidence": 0.892,
+      "field_scores": {
+       "part_number": 1.0,
+       "line": 1.0,
+       "date": 0.3,
+       "shift": 1.0
+      }
+     },
+     {
+      "work_order": {
+       "id": "WO-4452",
+       "part_number": "AX-2210-R",
+       "part_name": "Rear bracket assembly",
+       "line": 3,
+       "date": "2026-09-11",
+       "shift": "A",
+       "planned_qty": 1200,
+       "max_downtime_min": 30,
+       "max_reject_pct": 3
+      },
+      "confidence": 0.738,
+      "field_scores": {
+       "part_number": 1.0,
+       "line": 1.0,
+       "date": 0.3,
+       "shift": 0.0
+      }
+     }
+    ],
+    "notes": []
+   },
+   "assessment": {
+    "planned": 1200,
+    "produced": 1180,
+    "rejected": 21,
+    "good": 1159,
+    "shortfall": 20,
+    "shortfall_pct": 1.7,
+    "reject_pct": 1.8,
+    "reject_allowance_pct": 3,
+    "downtime_min": 20,
+    "downtime_allowance_min": 30,
+    "deviations": [],
+    "recommendations": [],
+    "risk_score": 0,
+    "risk_level": "low"
+   }
+  },
+  "3_ambiguous": {
+   "source": "text",
+   "text": "Report date 2026-09-10\nPart BK-0419-S, output 760, rejected 9\nno stoppages today",
+   "extracted": {
+    "work_order": null,
+    "part_number": "BK-0419-S",
+    "line": null,
+    "date": "2026-09-10",
+    "shift": null,
+    "produced": 760,
+    "rejected": 9,
+    "downtime_min": null,
+    "downtime_cause": null
+   },
+   "spans": {
+    "part_number": [
+     28,
+     37
+    ],
+    "date": [
+     12,
+     22
+    ],
+    "produced": [
+     39,
+     50
+    ],
+    "rejected": [
+     51,
+     61
+    ]
+   },
+   "match": {
+    "status": "review",
+    "confidence": 0.5,
+    "work_order": {
+     "id": "WO-4421",
+     "part_number": "BK-0419-S",
+     "part_name": "Brake shield",
+     "line": 1,
+     "date": "2026-09-10",
+     "shift": "A",
+     "planned_qty": 800,
+     "max_downtime_min": 25,
+     "max_reject_pct": 2
+    },
+    "candidates": [
+     {
+      "work_order": {
+       "id": "WO-4421",
+       "part_number": "BK-0419-S",
+       "part_name": "Brake shield",
+       "line": 1,
+       "date": "2026-09-10",
+       "shift": "A",
+       "planned_qty": 800,
+       "max_downtime_min": 25,
+       "max_reject_pct": 2
+      },
+      "confidence": 1.0,
+      "field_scores": {
+       "part_number": 1.0,
+       "date": 1.0
+      }
+     },
+     {
+      "work_order": {
+       "id": "WO-4422",
+       "part_number": "BK-0419-S",
+       "part_name": "Brake shield",
+       "line": 2,
+       "date": "2026-09-10",
+       "shift": "B",
+       "planned_qty": 800,
+       "max_downtime_min": 25,
+       "max_reject_pct": 2
+      },
+      "confidence": 1.0,
+      "field_scores": {
+       "part_number": 1.0,
+       "date": 1.0
+      }
+     },
+     {
+      "work_order": {
+       "id": "WO-4417",
+       "part_number": "AX-2210-R",
+       "part_name": "Rear bracket assembly",
+       "line": 3,
+       "date": "2026-09-10",
+       "shift": "B",
+       "planned_qty": 1200,
+       "max_downtime_min": 30,
+       "max_reject_pct": 3
+      },
+      "confidence": 0.25,
+      "field_scores": {
+       "part_number": 0.0,
+       "date": 1.0
+      }
+     }
+    ],
+    "notes": [
+     "Two or more work orders fit about equally well."
+    ]
+   },
+   "assessment": {
+    "planned": 800,
+    "produced": 760,
+    "rejected": 9,
+    "good": 751,
+    "shortfall": 40,
+    "shortfall_pct": 5.0,
+    "reject_pct": 1.2,
+    "reject_allowance_pct": 2,
+    "downtime_min": null,
+    "downtime_allowance_min": 25,
+    "deviations": [
+     {
+      "type": "shortfall",
+      "severity": "medium",
+      "message": "Output is 40 units (5.0%) below the plan of 800 for WO-4421."
+     }
+    ],
+    "recommendations": [
+     "Reschedule the remaining 40 units into the next shift on Line 1, or flag WO-4421 for partial completion."
+    ],
+    "risk_score": 20,
+    "risk_level": "medium"
+   }
+  },
+  "4_on_plan": {
+   "source": "text",
+   "text": "Production log 10 Sep 2026\nLine 4, Shift A, HX-1050-M\nTotal completed 1498, rejected 12\nDowntime 10 min (lubrication)",
+   "extracted": {
+    "work_order": null,
+    "part_number": "HX-1050-M",
+    "line": 4,
+    "date": "2026-09-10",
+    "shift": "A",
+    "produced": 1498,
+    "rejected": 12,
+    "downtime_min": 10,
+    "downtime_cause": "maintenance"
+   },
+   "spans": {
+    "part_number": [
+     44,
+     53
+    ],
+    "line": [
+     27,
+     33
+    ],
+    "date": [
+     15,
+     26
+    ],
+    "shift": [
+     35,
+     42
+    ],
+    "produced": [
+     60,
+     75
+    ],
+    "rejected": [
+     76,
+     87
+    ],
+    "downtime_min": [
+     88,
+     103
+    ],
+    "downtime_cause": [
+     105,
+     116
+    ]
+   },
+   "match": {
+    "status": "matched",
+    "confidence": 1.0,
+    "work_order": {
+     "id": "WO-4435",
+     "part_number": "HX-1050-M",
+     "part_name": "Heat exchanger plate",
+     "line": 4,
+     "date": "2026-09-10",
+     "shift": "A",
+     "planned_qty": 1500,
+     "max_downtime_min": 20,
+     "max_reject_pct": 1.5
+    },
+    "candidates": [
+     {
+      "work_order": {
+       "id": "WO-4435",
+       "part_number": "HX-1050-M",
+       "part_name": "Heat exchanger plate",
+       "line": 4,
+       "date": "2026-09-10",
+       "shift": "A",
+       "planned_qty": 1500,
+       "max_downtime_min": 20,
+       "max_reject_pct": 1.5
+      },
+      "confidence": 1.0,
+      "field_scores": {
+       "part_number": 1.0,
+       "line": 1.0,
+       "date": 1.0,
+       "shift": 1.0
+      }
+     },
+     {
+      "work_order": {
+       "id": "WO-4436",
+       "part_number": "HX-1050-M",
+       "part_name": "Heat exchanger plate",
+       "line": 4,
+       "date": "2026-09-10",
+       "shift": "B",
+       "planned_qty": 1500,
+       "max_downtime_min": 20,
+       "max_reject_pct": 1.5
+      },
+      "confidence": 0.846,
+      "field_scores": {
+       "part_number": 1.0,
+       "line": 1.0,
+       "date": 1.0,
+       "shift": 0.0
+      }
+     },
+     {
+      "work_order": {
+       "id": "WO-4421",
+       "part_number": "BK-0419-S",
+       "part_name": "Brake shield",
+       "line": 1,
+       "date": "2026-09-10",
+       "shift": "A",
+       "planned_qty": 800,
+       "max_downtime_min": 25,
+       "max_reject_pct": 2
+      },
+      "confidence": 0.308,
+      "field_scores": {
+       "part_number": 0.0,
+       "line": 0.0,
+       "date": 1.0,
+       "shift": 1.0
+      }
+     }
+    ],
+    "notes": []
+   },
+   "assessment": {
+    "planned": 1500,
+    "produced": 1498,
+    "rejected": 12,
+    "good": 1486,
+    "shortfall": 2,
+    "shortfall_pct": 0.1,
+    "reject_pct": 0.8,
+    "reject_allowance_pct": 1.5,
+    "downtime_min": 10,
+    "downtime_allowance_min": 20,
+    "deviations": [],
+    "recommendations": [],
+    "risk_score": 0,
+    "risk_level": "low"
+   }
+  },
+  "5_conflicting": {
+   "source": "text",
+   "text": "W/O 4430 ... valve cover CV-7731-B ... Line 2 ... Shift A ... 10/09/26\nProduced 380 pcs, 22 rejected\nDowntime 1.5 hr - waiting material",
+   "extracted": {
+    "work_order": "WO-4430",
+    "part_number": "CV-7731-B",
+    "line": 2,
+    "date": "2026-09-10",
+    "shift": "A",
+    "produced": 380,
+    "rejected": 1,
+    "downtime_min": 90,
+    "downtime_cause": "material shortage"
+   },
+   "spans": {
+    "work_order": [
+     0,
+     8
+    ],
+    "part_number": [
+     25,
+     34
+    ],
+    "line": [
+     39,
+     45
+    ],
+    "date": [
+     62,
+     70
+    ],
+    "shift": [
+     50,
+     57
+    ],
+    "produced": [
+     71,
+     83
+    ],
+    "rejected": [
+     92,
+     111
+    ],
+    "downtime_min": [
+     101,
+     116
+    ],
+    "downtime_cause": [
+     119,
+     135
+    ]
+   },
+   "match": {
+    "status": "review",
+    "confidence": 0.87,
+    "work_order": {
+     "id": "WO-4430",
+     "part_number": "CV-7731-A",
+     "part_name": "Valve cover A",
+     "line": 2,
+     "date": "2026-09-10",
+     "shift": "A",
+     "planned_qty": 500,
+     "max_downtime_min": 40,
+     "max_reject_pct": 4
+    },
+    "candidates": [
+     {
+      "work_order": {
+       "id": "WO-4430",
+       "part_number": "CV-7731-A",
+       "part_name": "Valve cover A",
+       "line": 2,
+       "date": "2026-09-10",
+       "shift": "A",
+       "planned_qty": 500,
+       "max_downtime_min": 40,
+       "max_reject_pct": 4
+      },
+      "confidence": 0.87,
+      "field_scores": {
+       "work_order": 1.0,
+       "part_number": 0.5,
+       "line": 1.0,
+       "date": 1.0,
+       "shift": 1.0
+      }
+     },
+     {
+      "work_order": {
+       "id": "WO-4431",
+       "part_number": "CV-7731-B",
+       "part_name": "Valve cover B",
+       "line": 2,
+       "date": "2026-09-10",
+       "shift": "C",
+       "planned_qty": 500,
+       "max_downtime_min": 40,
+       "max_reject_pct": 4
+      },
+      "confidence": 0.478,
+      "field_scores": {
+       "work_order": 0.0,
+       "part_number": 1.0,
+       "line": 1.0,
+       "date": 1.0,
+       "shift": 0.0
+      }
+     },
+     {
+      "work_order": {
+       "id": "WO-4422",
+       "part_number": "BK-0419-S",
+       "part_name": "Brake shield",
+       "line": 2,
+       "date": "2026-09-10",
+       "shift": "B",
+       "planned_qty": 800,
+       "max_downtime_min": 25,
+       "max_reject_pct": 2
+      },
+      "confidence": 0.217,
+      "field_scores": {
+       "work_order": 0.0,
+       "part_number": 0.0,
+       "line": 1.0,
+       "date": 1.0,
+       "shift": 0.0
+      }
+     }
+    ],
+    "notes": [
+     "Report cites WO-4430 but part CV-7731-B differs from the plan (CV-7731-A)."
+    ]
+   },
+   "assessment": {
+    "planned": 500,
+    "produced": 380,
+    "rejected": 1,
+    "good": 379,
+    "shortfall": 120,
+    "shortfall_pct": 24.0,
+    "reject_pct": 0.3,
+    "reject_allowance_pct": 4,
+    "downtime_min": 90,
+    "downtime_allowance_min": 40,
+    "deviations": [
+     {
+      "type": "shortfall",
+      "severity": "high",
+      "message": "Output is 120 units (24.0%) below the plan of 500 for WO-4430."
+     },
+     {
+      "type": "downtime",
+      "severity": "high",
+      "message": "Downtime of 90 min exceeds the 40 min allowance. Notes attribute it to material shortage."
+     }
+    ],
+    "recommendations": [
+     "Reschedule the remaining 120 units into the next shift on Line 2, or flag WO-4430 for partial completion."
+    ],
+    "risk_score": 70,
+    "risk_level": "high"
+   }
+  }
+ },
+ "workOrders": [
+  {
+   "id": "WO-4409",
+   "part_number": "AX-2210-R",
+   "part_name": "Rear bracket assembly",
+   "line": 3,
+   "date": "2026-09-09",
+   "shift": "B",
+   "planned_qty": 1200,
+   "max_downtime_min": 30,
+   "max_reject_pct": 3
+  },
+  {
+   "id": "WO-4417",
+   "part_number": "AX-2210-R",
+   "part_name": "Rear bracket assembly",
+   "line": 3,
+   "date": "2026-09-10",
+   "shift": "B",
+   "planned_qty": 1200,
+   "max_downtime_min": 30,
+   "max_reject_pct": 3
+  },
+  {
+   "id": "WO-4418",
+   "part_number": "AX-2210-L",
+   "part_name": "Left bracket assembly",
+   "line": 3,
+   "date": "2026-09-10",
+   "shift": "C",
+   "planned_qty": 900,
+   "max_downtime_min": 30,
+   "max_reject_pct": 3
+  },
+  {
+   "id": "WO-4421",
+   "part_number": "BK-0419-S",
+   "part_name": "Brake shield",
+   "line": 1,
+   "date": "2026-09-10",
+   "shift": "A",
+   "planned_qty": 800,
+   "max_downtime_min": 25,
+   "max_reject_pct": 2
+  },
+  {
+   "id": "WO-4422",
+   "part_number": "BK-0419-S",
+   "part_name": "Brake shield",
+   "line": 2,
+   "date": "2026-09-10",
+   "shift": "B",
+   "planned_qty": 800,
+   "max_downtime_min": 25,
+   "max_reject_pct": 2
+  },
+  {
+   "id": "WO-4430",
+   "part_number": "CV-7731-A",
+   "part_name": "Valve cover A",
+   "line": 2,
+   "date": "2026-09-10",
+   "shift": "A",
+   "planned_qty": 500,
+   "max_downtime_min": 40,
+   "max_reject_pct": 4
+  },
+  {
+   "id": "WO-4431",
+   "part_number": "CV-7731-B",
+   "part_name": "Valve cover B",
+   "line": 2,
+   "date": "2026-09-10",
+   "shift": "C",
+   "planned_qty": 500,
+   "max_downtime_min": 40,
+   "max_reject_pct": 4
+  },
+  {
+   "id": "WO-4435",
+   "part_number": "HX-1050-M",
+   "part_name": "Heat exchanger plate",
+   "line": 4,
+   "date": "2026-09-10",
+   "shift": "A",
+   "planned_qty": 1500,
+   "max_downtime_min": 20,
+   "max_reject_pct": 1.5
+  },
+  {
+   "id": "WO-4436",
+   "part_number": "HX-1050-M",
+   "part_name": "Heat exchanger plate",
+   "line": 4,
+   "date": "2026-09-10",
+   "shift": "B",
+   "planned_qty": 1500,
+   "max_downtime_min": 20,
+   "max_reject_pct": 1.5
+  },
+  {
+   "id": "WO-4440",
+   "part_number": "PL-3308-X",
+   "part_name": "Pulley housing",
+   "line": 1,
+   "date": "2026-09-10",
+   "shift": "B",
+   "planned_qty": 650,
+   "max_downtime_min": 30,
+   "max_reject_pct": 3
+  },
+  {
+   "id": "WO-4441",
+   "part_number": "PL-3308-X",
+   "part_name": "Pulley housing",
+   "line": 1,
+   "date": "2026-09-11",
+   "shift": "A",
+   "planned_qty": 650,
+   "max_downtime_min": 30,
+   "max_reject_pct": 3
+  },
+  {
+   "id": "WO-4452",
+   "part_number": "AX-2210-R",
+   "part_name": "Rear bracket assembly",
+   "line": 3,
+   "date": "2026-09-11",
+   "shift": "A",
+   "planned_qty": 1200,
+   "max_downtime_min": 30,
+   "max_reject_pct": 3
+  }
+ ]
+}

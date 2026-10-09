@@ -64,6 +64,8 @@ def match(fields: dict, work_orders: list[dict]) -> dict:
 
     best = ranked[0] if ranked else None
     margin = best["confidence"] - ranked[1]["confidence"] if len(ranked) > 1 else 1.0
+    # A perfect score that a rival ties is not a confident match: halve it as the margin closes.
+    overall = round(best["confidence"] * (0.5 + 0.5 * min(1.0, margin / AMBIGUITY_MARGIN)), 3) if best else 0.0
     notes: list[str] = []
 
     ref = fields.get("work_order")
@@ -73,9 +75,9 @@ def match(fields: dict, work_orders: list[dict]) -> dict:
     if ref_wo and fields.get("part_number") and _part_score(fields["part_number"], ref_wo["part_number"]) < 1.0:
         notes.append(f"Report cites {ref} but part {fields['part_number']} differs from the plan ({ref_wo['part_number']}).")
 
-    if not best or best["confidence"] < REVIEW_THRESHOLD:
+    if not best or overall < REVIEW_THRESHOLD:
         status = "unmatched"
-    elif best["confidence"] < MATCH_THRESHOLD or margin < AMBIGUITY_MARGIN or notes:
+    elif overall < MATCH_THRESHOLD or margin < AMBIGUITY_MARGIN or notes:
         status = "review"
         if margin < AMBIGUITY_MARGIN:
             notes.append("Two or more work orders fit about equally well.")
@@ -84,7 +86,7 @@ def match(fields: dict, work_orders: list[dict]) -> dict:
 
     return {
         "status": status,
-        "confidence": best["confidence"] if best else 0.0,
+        "confidence": overall,
         "work_order": best["work_order"] if status != "unmatched" else None,
         "candidates": ranked[:3],
         "notes": notes,
